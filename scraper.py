@@ -11,10 +11,16 @@ import pandas as pd
 
 from utils import create_dataframe
 from utils import export_data
+from utils import extract_centroids_from_geodata
+
+# Allow url: https://www.google.com/maps/search/keyword/@x,y,z
 
 class Scraper:
     def __init__(self):
         self.driver = webdriver.Chrome()
+        self.z = 15
+
+        # Data variables
         self.names = []
         self.addresses = []
         self.numbers = []
@@ -58,8 +64,9 @@ class Scraper:
         except Exception as e:
             print(e)
             return None
-        
-    def get_geocoder(self, url_location): # gets geographical lat/long coordinates
+    
+    # gets geographical lat/long coordinates
+    def get_geocoder(self, url_location): 
         try:
             coords = re.search(r"!3d-?\d\d?\.\d{4,8}!4d-?\d\d?\.\d{4,8}",
                             url_location).group()
@@ -69,16 +76,30 @@ class Scraper:
             print(e)
             return None
 
-    def scrap(self, url):
+    def scrap(self, url, geodata_path):
         try:
+            # Getting all coords for iterating scrapper
+            coords = extract_centroids_from_geodata(geodata_path)
+
             self.driver.maximize_window()
-            self.driver.get(url=url)
+
+            for coord in coords[:3]:
+            # Create url with geodata
+                geo_url = url + f"/@{coord[0]},{coord[1]},{self.z}z"
+                time.sleep(2)
+                self.driver.get(url=geo_url)
+
+            time.sleep(5)
+            
+
+            return
+
 
             self.driver.implicitly_wait(random.randint(1, 2))
 
             elements = self.driver.find_elements(by=By.CLASS_NAME, value="hfpxzc")
 
-            for element in elements:
+            for element in elements[:2]:
                 element.click()
                 time.sleep(random.randint(1, 3))
 
@@ -128,6 +149,7 @@ if __name__ == "__main__":
     print("Testing running")
 
     url_test = "https://www.google.com/maps/search/pizzeria"
+    path_geodata_test = "./geodata/comunas.csv"
 
     scraper_test = Scraper()
-    scraper_test.scrap(url=url_test)
+    scraper_test.scrap(url=url_test, geodata_path=path_geodata_test)
