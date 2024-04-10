@@ -86,44 +86,47 @@ class Scraper:
             for coord in coords[:3]:
             # Create url with geodata
                 geo_url = url + f"/@{coord[0]},{coord[1]},{self.z}z"
-                time.sleep(2)
                 self.driver.get(url=geo_url)
+                
+                self.driver.implicitly_wait(5)
 
-            time.sleep(5)
-            
+                zoom_widget = self.driver.find_element(by=By.ID, value='widget-zoom-out')
+                zoom_widget.click()
 
-            return
+                self.driver.implicitly_wait(5)
 
+                search_widget = self.driver.find_element(by=By.XPATH, value="//button[@aria-label='Buscar en esta área']")
+                search_widget.click()
+                
+                self.driver.implicitly_wait(5)
 
-            self.driver.implicitly_wait(random.randint(1, 2))
+                elements = self.driver.find_elements(by=By.CLASS_NAME, value="hfpxzc")
 
-            elements = self.driver.find_elements(by=By.CLASS_NAME, value="hfpxzc")
+                for element in elements:
+                    element.click()
+                    time.sleep(random.randint(1, 3))
 
-            for element in elements[:2]:
-                element.click()
-                time.sleep(random.randint(1, 3))
+                    # Scraping info
 
-                # Scraping info
+                    name = self.get_name()
+                    self.names.append(name)
 
-                name = self.get_name()
-                self.names.append(name)
+                    address = self.get_address()
+                    self.addresses.append(address)
 
-                address = self.get_address()
-                self.addresses.append(address)
+                    number = self.get_number()
+                    self.numbers.append(number)
 
-                number = self.get_number()
-                self.numbers.append(number)
+                    website = self.get_website()
+                    self.websites.append(website)
 
-                website = self.get_website()
-                self.websites.append(website)
+                    rating = self.get_rating()
+                    self.ratings.append(rating)
 
-                rating = self.get_rating()
-                self.ratings.append(rating)
+                    geocoder = self.get_geocoder(self.driver.current_url)
+                    self.geocoders.append(geocoder)
 
-                geocoder = self.get_geocoder(self.driver.current_url)
-                self.geocoders.append(geocoder)
-
-                # End scraping info
+                    # End scraping info
                 
 
             time.sleep(random.randint(1, 3))
