@@ -1,4 +1,4 @@
-<img src="https://contextoturistico.com/wp-content/uploads/2021/11/1366_2000.jpg"/>
+<img src="https://i.blogs.es/ef32be/google-maps-portada/500_333.webp"/>
 
 <h1>Google Maps Web Scraper with Python</h1>
 
